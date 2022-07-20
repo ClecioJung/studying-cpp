@@ -121,9 +121,9 @@ class Circular_Buffer<Floating, capacity>::Buffer_Iterator {
     bool operator==(const Buffer_Iterator &it) const;
 
     template <bool Q = Const>
-    typename std::enable_if<!Q, Floating &>::type operator*();
+    typename std::enable_if<!Q, Floating &>::type operator*(void);
     template <bool Q = Const>
-    typename std::enable_if<Q, const Floating &>::type operator*();
+    typename std::enable_if<Q, const Floating &>::type operator*(void);
 };
 
 template <typename Floating, size_t capacity>

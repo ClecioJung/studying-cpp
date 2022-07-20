@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef __SCALAR_CPP
+#define __SCALAR_CPP
+
 #include <cmath>
 #include <cstdint>
 
@@ -66,14 +69,14 @@ Floating minimum(const Floating a, const Floating b) {
 
 template <typename Floating>
 Floating sign(const Floating value) {
-    return static_cast<Floating>((value > 0) ? 1.0 : -1.0);
+    return static_cast<Floating>((value > static_cast<Floating>(0)) ? 1.0 : -1.0);
 }
 
 // My own round function, so I don't need to link with -lm,
 // avoiding any dependencies
 template <typename Floating>
 Floating round(const Floating value) {
-    return static_cast<Floating>((value >= 0.0) ? floor(value + 0.5) : ceil(value - 0.5));
+    return static_cast<Floating>((value >= static_cast<Floating>(0.0)) ? floor(value + 0.5) : ceil(value - 0.5));
 }
 
 template <typename Floating>
@@ -86,10 +89,10 @@ Floating random_number(const Floating min, const Floating max) {
 // avoiding any dependencies
 template <typename Floating>
 Floating square_root(const Floating value) {
-    if (are_close<Floating>(fabs(value), 0.0, static_cast<Floating>(scalar_precision))) {
-        return 0.0;  // square_root(0) = 0
-    } else if (value < 0) {
-        return NAN;
+    if (are_close<Floating>(value, static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
+        return static_cast<Floating>(0.0);  // square_root(0) = 0
+    } else if (value < static_cast<Floating>(0)) {
+        return static_cast<Floating>(NAN);
     }
     Floating x = value;
     // Use the Newton-Raphson method to find the root
@@ -97,7 +100,7 @@ Floating square_root(const Floating value) {
     for (size_t k = 0; k < scalar_iterations; k++) {
         const Floating delta = (value / x - x) / 2.0;
         x += delta;
-        if (are_close<Floating>(fabs(delta), 0.0, static_cast<Floating>(scalar_precision))) {
+        if (are_close<Floating>(delta, static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
             break;
         }
     }
@@ -111,13 +114,13 @@ Floating root(const Floating value, const uint64_t n) {
     if (n == 1) {
         return value;
     } else if ((n == 0) && (are_close(value, static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision)))) {
-        return NAN;
+        return static_cast<Floating>(NAN);
     } else if (n == 0) {
-        return 1.0;
+        return static_cast<Floating>(1.0);
     } else if (are_close(value, static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
-        return 0.0;  // root(0) = 0
+        return static_cast<Floating>(0.0);  // root(0) = 0
     } else if ((n % 2 == 0) && (value < static_cast<Floating>(0.0))) {
-        return NAN;
+        return static_cast<Floating>(NAN);
     }
     Floating x = value;
     // Use the Newton-Raphson method to find the root
@@ -125,7 +128,7 @@ Floating root(const Floating value, const uint64_t n) {
     for (size_t k = 0; k < scalar_iterations; k++) {
         const Floating delta = (value / power(x, (n - 1)) - x) / (static_cast<Floating>(n));
         x += delta;
-        if (are_close<Floating>(fabs(delta), static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
+        if (are_close<Floating>(delta, static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
             break;
         }
     }
@@ -153,7 +156,7 @@ Floating exponential(const Floating value) {
     for (uint64_t i = 1; i < scalar_iterations; i++) {
         term *= value / (static_cast<Floating>(i));
         result += term;
-        if (are_close<Floating>(fabs(term), static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
+        if (are_close<Floating>(term, static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
             break;
         }
     }
@@ -170,7 +173,7 @@ Floating sine(Floating value) {
     for (uint64_t i = 1; i < scalar_iterations; i++) {
         term *= -value * value / (static_cast<Floating>((2 * i + 1) * (2 * i)));
         result += term;
-        if (are_close<Floating>(fabs(term), static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
+        if (are_close<Floating>(term, static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
             break;
         }
     }
@@ -187,7 +190,7 @@ Floating cosine(Floating value) {
     for (uint64_t i = 1; i < scalar_iterations; i++) {
         term *= -value * value / (static_cast<Floating>((2 * i) * (2 * i - 1)));
         result += term;
-        if (are_close<Floating>(fabs(term), static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
+        if (are_close<Floating>(term, static_cast<Floating>(0.0), static_cast<Floating>(scalar_precision))) {
             break;
         }
     }
@@ -246,6 +249,8 @@ Floating atan2(const Floating y, const Floating x) {
         return (arctangent(y / x) - static_cast<Floating>(const_pi));
     }
 }
+
+#endif  // __SCALAR_CPP
 
 //------------------------------------------------------------------------------
 // END

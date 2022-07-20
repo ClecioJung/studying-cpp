@@ -20,37 +20,91 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef __LINKED_LIST_CPP
+#define __LINKED_LIST_CPP
+
 #include <cstring>
 #include <functional>
 #include <sstream>
 
-std::function<void(int)> func;
-
+template <typename Number>
 class Linked_List {
    public:
-    struct Node {
-        int value;
-        Node *next;
-        Node *previous;
-    };
+    class Node;
 
     Linked_List(void) : head(nullptr), tail(nullptr) {}
     ~Linked_List(void);
     std::string to_string(void) const;
-    Node &insert_new_head(const int value);
-    Node &insert_new_tail(const int value);
-    Node &insert_before(Node &next, const int value);
-    Node &insert_after(Node &previous, const int value);
-    Node &find(const int value);
-    Node &reverse_find(const int value);
+    Node &insert_new_head(const Number value);
+    Node &insert_new_tail(const Number value);
+    Node &insert_before(Node &next, const Number value);
+    Node &insert_after(Node &previous, const Number value);
+    Node &find(const Number value);
+    Node &reverse_find(const Number value);
     void del(Node &previous);
+
+    // Iterators
+    class List_Iterator;
+    List_Iterator begin(void);
+    List_Iterator end(void);
 
    private:
     Node *head;
     Node *tail;
 };
 
-Linked_List::~Linked_List(void) {
+template <typename Number>
+class Linked_List<Number>::Node {
+   private:
+    Node *next;
+    Node *previous;
+
+   public:
+    friend class Linked_List;
+
+    Number value;
+
+    Node(Number value, Node *next, Node *previous) : next(next), previous(previous), value(value) {}
+};
+
+template <typename Number>
+class Linked_List<Number>::List_Iterator {
+   private:
+    Node *current;
+
+   public:
+    List_Iterator(Node *current) : current(current) {}
+    Number &operator*(void) { return current->value; }
+    List_Iterator &operator++(void) {
+        if (current != nullptr) {
+            current = current->next;
+        }
+        return *this;
+    }
+    List_Iterator &operator--(void) {
+        if (current != nullptr) {
+            current = current->previous;
+        }
+        return *this;
+    }
+    bool operator!=(const List_Iterator &it) const { return (current != it.current); }
+    bool operator==(const List_Iterator &it) const { return (current == it.current); }
+};
+
+template <typename Number>
+typename Linked_List<Number>::List_Iterator
+Linked_List<Number>::begin(void) {
+    return List_Iterator(head);
+}
+
+template <typename Number>
+typename Linked_List<Number>::List_Iterator
+Linked_List<Number>::end(void) {
+    return List_Iterator(nullptr);
+}
+
+template <typename Number>
+Linked_List<Number>::~Linked_List(void) {
     Node *current = head;
     while (current != nullptr) {
         Node *next = current->next;
@@ -61,11 +115,13 @@ Linked_List::~Linked_List(void) {
     tail = nullptr;
 }
 
-std::ostream &operator<<(std::ostream &os, const Linked_List &list) {
+template <typename Number>
+std::ostream &operator<<(std::ostream &os, const Linked_List<Number> &list) {
     return os << list.to_string();
 }
 
-std::string Linked_List::to_string(void) const {
+template <typename Number>
+std::string Linked_List<Number>::to_string(void) const {
     std::ostringstream strs;
     size_t index = 0;
     Node *current = head;
@@ -79,11 +135,10 @@ std::string Linked_List::to_string(void) const {
     return strs.str();
 }
 
-Linked_List::Node &Linked_List::insert_new_head(const int value) {
-    Node *node = new Node;
-    node->value = value;
-    node->next = head;
-    node->previous = nullptr;
+template <typename Number>
+typename Linked_List<Number>::Node &
+Linked_List<Number>::insert_new_head(const Number value) {
+    Node *node = new Node(value, head, nullptr);
     if (head != nullptr) {
         head->previous = node;
     }
@@ -94,11 +149,10 @@ Linked_List::Node &Linked_List::insert_new_head(const int value) {
     return *node;
 }
 
-Linked_List::Node &Linked_List::insert_new_tail(const int value) {
-    Node *node = new Node;
-    node->value = value;
-    node->next = nullptr;
-    node->previous = tail;
+template <typename Number>
+typename Linked_List<Number>::Node &
+Linked_List<Number>::insert_new_tail(const Number value) {
+    Node *node = new Node(value, nullptr, tail);
     if (tail != nullptr) {
         tail->next = node;
     }
@@ -109,12 +163,11 @@ Linked_List::Node &Linked_List::insert_new_tail(const int value) {
     return *node;
 }
 
-Linked_List::Node &Linked_List::insert_before(Node &next, const int value) {
-    Node *node = new Node;
-    node->value = value;
-    node->next = &next;
+template <typename Number>
+typename Linked_List<Number>::Node &
+Linked_List<Number>::insert_before(Node &next, const Number value) {
+    Node *node = new Node(value, &next, next.previous);
     Node *previous = next.previous;
-    node->previous = previous;
     next.previous = node;
     if (previous != nullptr) {
         previous->next = node;
@@ -125,12 +178,11 @@ Linked_List::Node &Linked_List::insert_before(Node &next, const int value) {
     return *node;
 }
 
-Linked_List::Node &Linked_List::insert_after(Node &previous, const int value) {
-    Node *node = new Node;
-    node->value = value;
-    node->previous = &previous;
+template <typename Number>
+typename Linked_List<Number>::Node &
+Linked_List<Number>::insert_after(Node &previous, const Number value) {
+    Node *node = new Node(value, previous.next, &previous);
     Node *next = previous.next;
-    node->next = next;
     previous.next = node;
     if (next != nullptr) {
         next->previous = node;
@@ -141,7 +193,9 @@ Linked_List::Node &Linked_List::insert_after(Node &previous, const int value) {
     return *node;
 }
 
-Linked_List::Node &Linked_List::find(const int value) {
+template <typename Number>
+typename Linked_List<Number>::Node &
+Linked_List<Number>::find(const Number value) {
     // Sequential search
     Node *current = head;
     while (current != nullptr) {
@@ -153,7 +207,9 @@ Linked_List::Node &Linked_List::find(const int value) {
     throw std::runtime_error("Didn't found the requested value in the linked list!");
 }
 
-Linked_List::Node &Linked_List::reverse_find(const int value) {
+template <typename Number>
+typename Linked_List<Number>::Node &
+Linked_List<Number>::reverse_find(const Number value) {
     // Sequential search
     Node *current = tail;
     while (current != nullptr) {
@@ -165,7 +221,8 @@ Linked_List::Node &Linked_List::reverse_find(const int value) {
     throw std::runtime_error("Didn't found the requested value in the linked list!");
 }
 
-void Linked_List::del(Node &node) {
+template <typename Number>
+void Linked_List<Number>::del(Node &node) {
     Node *previous = node.previous;
     Node *next = node.next;
     if (previous != nullptr) {
@@ -182,6 +239,8 @@ void Linked_List::del(Node &node) {
     }
     delete &node;
 }
+
+#endif  // __LINKED_LIST_CPP
 
 //------------------------------------------------------------------------------
 // END

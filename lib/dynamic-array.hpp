@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef __DYNAMIC_ARRAY_CPP
+#define __DYNAMIC_ARRAY_CPP
+
 #include <sstream>
 
 constexpr size_t initial_array_capacity = 4;
@@ -171,6 +174,8 @@ Number &Dynamic_Array<Number>::operator[](const size_t index) const {
     }
     return values[index];
 }
+
+#endif  // __DYNAMIC_ARRAY_CPP
 
 //------------------------------------------------------------------------------
 // END

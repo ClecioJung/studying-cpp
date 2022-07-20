@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef __VECTOR_CPP
+#define __VECTOR_CPP
+
 #include <cstdint>
 #include <iostream>
 #include <sstream>
@@ -386,6 +389,8 @@ size_t Vector<Floating>::binary_search(const double value) const {
     }
     return middle;
 }
+
+#endif  // __VECTOR_CPP
 
 //------------------------------------------------------------------------------
 // END
