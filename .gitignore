@@ -1,0 +1,8 @@
+.deps/
+.obj/
+bin/
+.vscode/
+*.d
+*.o
+*.a
+*.so
