@@ -64,6 +64,9 @@ int main(void) {
     auto e = a + b;
     std::cout << "Vector e = (a + b):\n"
               << e << std::endl;
+    auto f = a - b;
+    std::cout << "Vector f = (a - b):\n"
+              << f << std::endl;
     std::cout << "For each loop in the vector e:\n";
     for (auto value : e) {
         std::cout << value << " - ";

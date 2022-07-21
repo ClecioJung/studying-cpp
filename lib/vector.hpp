@@ -29,7 +29,6 @@
 
 #include "scalar.hpp"
 
-constexpr uint64_t vecto_iterations = 10000;
 constexpr double vector_precision = 1e-8;
 
 template <typename Floating>
@@ -43,25 +42,27 @@ class Vector {
     Vector(const size_t len);
     Vector(const Vector &vector);
     ~Vector(void);
-    void resize(const size_t length);
+    size_t length(void) const { return len; }
     Floating &operator[](const size_t index) const;
-    Vector &random(const Floating min, const Floating max);
-    std::string to_string(void) const;
+    Vector operator+(const Vector &vector) const;
+    Vector operator-(const Vector &vector) const;
+    Vector operator*(const Floating scalar) const;
+    Floating operator*(const Vector &vector) const;  // Dot product
+    Vector &operator*=(const Floating scalar);
     Vector &operator=(const Floating value);
     Vector &operator=(const Vector &to_copy);
-    Vector operator*(const Floating scalar) const;
-    Vector &operator*=(const Floating scalar);
-    Floating operator*(const Vector &vector) const;  // Dot product
+    bool operator==(const Vector &vector) const;
+    bool operator!=(const Vector &vector) const;
+    void resize(const size_t length);
+    Vector &random(const Floating min, const Floating max);
+    std::string to_string(void) const;
     Vector cross_product(const Vector &vector) const;
     Floating norm(void) const;
     Floating max(void) const;
     Floating min(void) const;
     Floating max_abs(void) const;
     Floating mean(void) const;
-    Vector operator+(const Vector &vector) const;
-    Vector operator-(const Vector &vector) const;
     Floating max_diff(const Vector &vector) const;
-    bool operator==(const Vector &vector) const;
     bool is_orthogonal(const Vector &vector) const;
     bool is_sorted(void) const;
     void sort(void);
@@ -102,6 +103,110 @@ Vector<Floating>::~Vector(void) {
 }
 
 template <typename Floating>
+Floating &Vector<Floating>::operator[](const size_t index) const {
+    if (index >= len) {
+        throw std::runtime_error("Trying to access vector in invalid range!");
+    }
+    return data[index];
+}
+
+template <typename Floating>
+Vector<Floating> Vector<Floating>::operator+(const Vector<Floating> &vector) const {
+    if (len != vector.len) {
+        throw std::runtime_error("Sum involving vectors with incompatible lengths!");
+    }
+    Vector<Floating> result(len);
+    for (size_t i = 0; i < len; i++) {
+        result.data[i] = data[i] + vector.data[i];
+    }
+    return result;
+}
+
+template <typename Floating>
+Vector<Floating> Vector<Floating>::operator-(const Vector<Floating> &vector) const {
+    if (len != vector.len) {
+        throw std::runtime_error("Subtraction involving vectors with incompatible lengths!");
+    }
+    Vector<Floating> result(len);
+    for (size_t i = 0; i < len; i++) {
+        result.data[i] = data[i] - vector.data[i];
+    }
+    return result;
+}
+
+template <typename Floating>
+Vector<Floating> Vector<Floating>::operator*(const Floating scalar) const {
+    Vector result(len);
+    for (size_t i = 0; i < len; i++) {
+        result.data[i] = data[i] * scalar;
+    }
+    return result;
+}
+
+template <typename Floating>
+Vector<Floating> operator*(const Floating scalar, const Vector<Floating> &vector) {
+    return (vector * scalar);
+}
+
+// Dot product
+template <typename Floating>
+Floating Vector<Floating>::operator*(const Vector<Floating> &vector) const {
+    if (len != vector.len) {
+        throw std::runtime_error("Dot product involving vectors with incompatible lengths!");
+    }
+    Floating result = static_cast<Floating>(0.0);
+    for (size_t i = 0; i < len; i++) {
+        result += data[i] * vector.data[i];
+    }
+    return result;
+}
+
+template <typename Floating>
+Vector<Floating> &Vector<Floating>::operator*=(const Floating scalar) {
+    for (size_t i = 0; i < len; i++) {
+        data[i] *= scalar;
+    }
+    return *this;
+}
+
+template <typename Floating>
+Vector<Floating> &Vector<Floating>::operator=(const Floating value) {
+    for (size_t i = 0; i < len; i++) {
+        data[i] = value;
+    }
+    return *this;
+}
+
+template <typename Floating>
+Vector<Floating> &Vector<Floating>::operator=(const Vector<Floating> &to_copy) {
+    if (len != to_copy.len) {
+        resize(to_copy.len);
+    }
+    for (size_t i = 0; i < len; i++) {
+        data[i] = to_copy.data[i];
+    }
+    return *this;
+}
+
+template <typename Floating>
+bool Vector<Floating>::operator==(const Vector &vector) const {
+    if (len != vector.len) {
+        return false;
+    }
+    for (size_t i = 0; i < len; i++) {
+        if (!are_close<Floating>(data[i], vector.data[i], static_cast<Floating>(vector_precision))) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template <typename Floating>
+bool Vector<Floating>::operator!=(const Vector &vector) const {
+    return !(this->operator==(vector));
+}
+
+template <typename Floating>
 void Vector<Floating>::resize(const size_t length) {
     if (data != nullptr) {
         delete[] data;
@@ -112,14 +217,6 @@ void Vector<Floating>::resize(const size_t length) {
         data = new Floating[length];
         len = length;
     }
-}
-
-template <typename Floating>
-Floating &Vector<Floating>::operator[](const size_t index) const {
-    if (index >= len) {
-        throw std::runtime_error("Trying to access vector in invalid range!");
-    }
-    return data[index];
 }
 
 template <typename Floating>
@@ -143,60 +240,6 @@ std::string Vector<Floating>::to_string(void) const {
         strs << "[" << i << "]: " << data[i] << std::endl;
     }
     return strs.str();
-}
-
-template <typename Floating>
-Vector<Floating> &Vector<Floating>::operator=(const Floating value) {
-    for (size_t i = 0; i < len; i++) {
-        data[i] = value;
-    }
-    return *this;
-}
-
-template <typename Floating>
-Vector<Floating> &Vector<Floating>::operator=(const Vector<Floating> &to_copy) {
-    if (len != to_copy.len) {
-        resize(to_copy.len);
-    }
-    for (size_t i = 0; i < len; i++) {
-        data[i] = to_copy.data[i];
-    }
-    return *this;
-}
-
-template <typename Floating>
-Vector<Floating> Vector<Floating>::operator*(const Floating scalar) const {
-    Vector result(len);
-    for (size_t i = 0; i < len; i++) {
-        result.data[i] = data[i] * scalar;
-    }
-    return result;
-}
-
-template <typename Floating>
-Vector<Floating> operator*(const Floating scalar, const Vector<Floating> &vector) {
-    return (vector * scalar);
-}
-
-template <typename Floating>
-Vector<Floating> &Vector<Floating>::operator*=(const Floating scalar) {
-    for (size_t i = 0; i < len; i++) {
-        data[i] *= scalar;
-    }
-    return *this;
-}
-
-// Dot product
-template <typename Floating>
-Floating Vector<Floating>::operator*(const Vector<Floating> &vector) const {
-    if (len != vector.len) {
-        throw std::runtime_error("Dot product involving vectors with incompatible lengths!");
-    }
-    Floating result = static_cast<Floating>(0.0);
-    for (size_t i = 0; i < len; i++) {
-        result += data[i] * vector.data[i];
-    }
-    return result;
 }
 
 template <typename Floating>
@@ -257,30 +300,6 @@ Floating Vector<Floating>::mean(void) const {
 }
 
 template <typename Floating>
-Vector<Floating> Vector<Floating>::operator+(const Vector<Floating> &vector) const {
-    if (len != vector.len) {
-        throw std::runtime_error("Sum involving vectors with incompatible lengths!");
-    }
-    Vector<Floating> result(len);
-    for (size_t i = 0; i < len; i++) {
-        result.data[i] = data[i] + vector.data[i];
-    }
-    return result;
-}
-
-template <typename Floating>
-Vector<Floating> Vector<Floating>::operator-(const Vector<Floating> &vector) const {
-    if (len != vector.len) {
-        throw std::runtime_error("Subtraction involving vectors with incompatible lengths!");
-    }
-    Vector<Floating> result(len);
-    for (size_t i = 0; i < len; i++) {
-        result.data[i] = data[i] - vector.data[i];
-    }
-    return result;
-}
-
-template <typename Floating>
 Floating Vector<Floating>::max_diff(const Vector &vector) const {
     if (len != vector.len) {
         throw std::runtime_error("Comparisson involving vectors with incompatible lengths!");
@@ -290,19 +309,6 @@ Floating Vector<Floating>::max_diff(const Vector &vector) const {
         error = maximum<Floating>(fabs(data[i] - vector.data[i]), error);
     }
     return error;
-}
-
-template <typename Floating>
-bool Vector<Floating>::operator==(const Vector &vector) const {
-    if (len != vector.len) {
-        return false;
-    }
-    for (size_t i = 0; i < len; i++) {
-        if (!are_close<Floating>(data[i], vector.data[i], static_cast<Floating>(vector_precision))) {
-            return false;
-        }
-    }
-    return true;
 }
 
 template <typename Floating>
