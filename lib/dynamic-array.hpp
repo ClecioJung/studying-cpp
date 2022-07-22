@@ -23,6 +23,7 @@
 #ifndef __DYNAMIC_ARRAY_CPP
 #define __DYNAMIC_ARRAY_CPP
 
+#include <iomanip>
 #include <sstream>
 
 constexpr size_t initial_array_capacity = 4;
@@ -80,7 +81,7 @@ std::string Dynamic_Array<Number>::to_string(void) const {
     std::ostringstream strs;
     strs << "Array length: " << length << ", capacity: " << capacity << std::endl;
     for (size_t i = 0; i < length; i++) {
-        strs << "[" << i << "]: " << values[i] << std::endl;
+        strs << "[" << std::setw(3) << i << "]: " << values[i] << std::endl;
     }
     return strs.str();
 }

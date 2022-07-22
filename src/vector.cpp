@@ -69,7 +69,7 @@ int main(void) {
               << f << std::endl;
     std::cout << "For each loop in the vector e:\n";
     for (auto value : e) {
-        std::cout << value << " - ";
+        std::cout << value << ", ";
     }
     std::cout << std::endl;
     return EXIT_SUCCESS;

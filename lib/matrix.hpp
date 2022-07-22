@@ -24,6 +24,7 @@
 #define __MATRIX_CPP
 
 #include <cstdint>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 
@@ -258,14 +259,15 @@ std::ostream &operator<<(std::ostream &os, const Matrix<Floating> &matrix) {
 template <typename Floating>
 std::string Matrix<Floating>::to_string(void) const {
     std::ostringstream strs;
+    strs << "       ";
     for (size_t j = 0; j < _cols; j++) {
-        strs << "[" << j << "] ";
+        strs << "[" << std::setw(3) << j << "]      ";
     }
     strs << std::endl;
     for (size_t i = 0; i < _rows; i++) {
-        strs << "[" << i << "]: ";
+        strs << "[" << std::setw(3) << i << "]: ";
         for (size_t j = 0; j < _cols; j++) {
-            strs << this->operator()(i, j) << " ";
+            strs << std::left << std::setw(10) << this->operator()(i, j) << " ";
         }
         strs << std::endl;
     }

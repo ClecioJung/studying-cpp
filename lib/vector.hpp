@@ -24,6 +24,7 @@
 #define __VECTOR_CPP
 
 #include <cstdint>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 
@@ -237,7 +238,7 @@ template <typename Floating>
 std::string Vector<Floating>::to_string(void) const {
     std::ostringstream strs;
     for (size_t i = 0; i < len; i++) {
-        strs << "[" << i << "]: " << data[i] << std::endl;
+        strs << "[" << std::setw(3) << i << "]: " << data[i] << std::endl;
     }
     return strs.str();
 }

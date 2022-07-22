@@ -30,7 +30,7 @@ int main(void) {
               << array << std::endl;
     std::cout << "For each loop in the array:\n";
     for (auto value : array) {
-        std::cout << value << " - ";
+        std::cout << value << ", ";
     }
     std::cout << std::endl;
     return EXIT_SUCCESS;

@@ -23,6 +23,7 @@
 #ifndef __CIRCULAR_BUFFER_CPP
 #define __CIRCULAR_BUFFER_CPP
 
+#include <iomanip>
 #include <sstream>
 #include <string>
 
@@ -60,7 +61,7 @@ std::string Circular_Buffer<Floating, capacity>::to_string(void) const {
     std::ostringstream strs;
     strs << "Start: " << start.index << ", finish: " << finish.index << std::endl;
     for (auto it = this->begin(); it != this->end(); ++it) {
-        strs << "[" << it.index << "]: " << *it << std::endl;
+        strs << "[" << std::setw(3) << it.index << "]: " << *it << std::endl;
     }
     return strs.str();
 }

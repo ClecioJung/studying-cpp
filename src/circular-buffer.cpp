@@ -22,15 +22,17 @@ int main(void) {
         for (int i = 0; i < 5; i++) {
             buf.unshift(105 - i);
         }
-        std::cout << "Buffer after insertion at the beginning:\n" << buf << std::endl;
+        std::cout << "Buffer after insertion at the beginning:\n"
+                  << buf << std::endl;
         std::cout << "For each loop in the buffer:\n";
-        for (auto &value : buf) {
-            std::cout << value << " - ";
+        for (auto& value : buf) {
+            std::cout << value << ", ";
             if (value == 105) {
                 value = 1050;
             }
         }
-        std::cout << "\n\nBuffer after changing value 105 to 1050:\n" << buf << std::endl;
+        std::cout << "\n\nBuffer after changing value 105 to 1050:\n"
+                  << buf << std::endl;
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
