@@ -33,7 +33,7 @@ AR = ar
 INCLUDES =
 
 # Flags for compiler
-CFLAGS = -W -Wall -Wextra -pedantic -O2 -std=c++11
+CFLAGS = -W -Wall -Wextra -pedantic -Wconversion -Wswitch-enum -flto -O2 -std=c++11
 
 # ----------------------------------------
 # Fomating macros

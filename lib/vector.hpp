@@ -222,7 +222,7 @@ void Vector<Floating>::resize(const size_t length) {
 
 template <typename Floating>
 Vector<Floating> &Vector<Floating>::random(const Floating min, const Floating max) {
-    srand(time(NULL));
+    srand(static_cast<unsigned int>(time(NULL)));
     for (size_t i = 0; i < len; i++) {
         data[i] = random_number<Floating>(min, max);
     }

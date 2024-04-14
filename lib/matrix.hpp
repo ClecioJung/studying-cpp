@@ -244,7 +244,7 @@ void Matrix<Floating>::resize(const size_t rows, const size_t cols) {
 
 template <typename Floating>
 Matrix<Floating> &Matrix<Floating>::random(const Floating min, const Floating max) {
-    srand(time(NULL));
+    srand(static_cast<unsigned int>(time(NULL)));
     for (size_t i = 0; i < (_rows * _cols); i++) {
         data[i] = random_number<Floating>(min, max);
     }

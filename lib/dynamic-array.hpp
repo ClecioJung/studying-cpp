@@ -60,7 +60,7 @@ class Dynamic_Array {
 template <typename Number>
 Dynamic_Array<Number>::Dynamic_Array(void) : length(0) {
     capacity = initial_array_capacity;
-    values = new int[capacity];
+    values = new Number[capacity];
 }
 
 template <typename Number>
@@ -68,7 +68,7 @@ Dynamic_Array<Number>::~Dynamic_Array(void) {
     length = 0;
     capacity = 0;
     delete[] values;
-    values = NULL;
+    values = nullptr;
 }
 
 template <typename Number>
@@ -90,7 +90,7 @@ template <typename Number>
 void Dynamic_Array<Number>::grow_capacity_if_needed(void) {
     if (length + 1 > capacity) {
         capacity *= 2;
-        int *new_values = new int[capacity];
+        Number *new_values = new Number[capacity];
         std::copy(&values[0], &values[length], new_values);
         delete[] values;
         values = new_values;
